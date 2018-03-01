@@ -5,6 +5,7 @@ eVes are packages based on eVe. There will be eVes like: eVe for programmers, eV
 
 3 STEPS:
     A typical eVe style application will have 3 steps:
+    
     Step 1: Security check.
         Includes:
           Checking credibility of IP and visitor. 
