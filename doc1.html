@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<!-- http://localhost/2017/eVeCurrent/Design/eVe_Presentation.html -->
+<head>
+
+	<meta charset="ASCII">
+	<meta name="viewport" content="width=device-width" initial-scale="2">
+	<title>eVe for developers</title>
+	
+	<style>
+	
+		td {
+			padding-left: 2em;
+		}
+		#back1, #next1 {
+			width: 15%;
+			border: 1px solid red;
+		}
+		#next1 {
+			position: absolute;
+			right: 1em;
+		}
+		#back1 {
+			position: absolute;
+			left: 1em;
+		}
+		
+		h3 {
+			margin-left: 20%;
+			clear: both;
+		}
+		
+		/* elements that can be hide and show */
+		.hide {
+			margin-left: 2em;
+			margin-bottom: 2em;
+			width: 80%;
+			height: 70%;
+			padding: 2em;
+			border: 2px solid;
+			border-radius: 25px;			
+		}
+		.level1 {
+			border: 1px solid black;
+			background-color: beige;			
+		}
+		.level2 {
+			border: 1px solid brown;
+			background-color: misty;
+		    color: green;
+		}		
+		/* security check container*/
+		.container {
+			margin: 1em;
+			padding: 1em;		
+			border: 1px solid red;
+			background-color: white;			
+		}
+
+		
+		/* clickable "+" and "-" signs */
+		.collapsable {
+			font-size: 2em;
+			font-weight: bold;
+			color: blue;
+		}
+		.step {
+			display: none;
+		}
+		
+	</style>
+	
+	<script>
+		var eVe = {};
+		eVe.steps = [];
+		eVe.backNext = -1;
+
+		eVe.setCollapsables = function() {
+			var el, collapsable, hides;
+			var collapsables = document.getElementsByClassName('collapsable');
+			for (i=0; i < collapsables.length; i++) {
+				el = collapsables[i];
+				eVe.hideShow(el);				
+				el.onclick = function() {
+					eVe.hideShow(this);
+				}				
+			}
+		}
+
+		eVe.hideShow = function(el) {
+			var parent1 = el.parentNode;
+			hides = parent1.getElementsByClassName('hide');
+			if(el.innerHTML == "-") {
+				hides[0].style.display = 'none';
+				el.innerHTML = '+';
+			}
+			else {
+				hides[0].style.display = 'block';
+				el.innerHTML = '-';			
+			}
+		}
+			
+		eVe.allowDrop = function(ev) {
+			ev.preventDefault();
+		}
+
+		eVe.drag = function(ev) {
+			ev.dataTransfer.setData("text", ev.target.id);
+		}
+
+		eVe.drop = function(ev) {
+			ev.preventDefault();
+			var data = ev.dataTransfer.getData("text");
+			ev.target.appendChild(document.getElementById(data));
+		}
+
+		/*  bacn and next */
+		eVe.clickables = function() {
+			document.getElementById('back1').onclick = function() { 
+				eVe.back();
+			}
+			document.getElementById('next1').onclick = function() {
+				eVe.next();
+			}
+		}
+		eVe.back = function() {
+			if(eVe.backNext > -1) {		
+				eVe.steps[eVe.backNext].style.display = 'none';
+				eVe.backNext--;
+			}
+		}
+
+		/* checks displays the sibling
+		*/
+		eVe.next = function() {
+			if(eVe.backNext < (eVe.steps.length - 1)) {
+				eVe.backNext++;
+				eVe.steps[eVe.backNext].style.display = 'block';
+			}
+		}
+		
+	</script>
+	
+</head>
+
+<body ondrop="eVe.drop(event)" ondragover="eVe.allowDrop(event)">
+
+<span id="back1"> Back </span>
+<span id="next1"> Next </span>
+
+<h3>eVe for developers</h3>
+
+
+<div id="step1" >
+	<span class="collapsable">-</span> Popular frameworks 
+	<div class="hide level1" > 	 
+		<br><span>Starts with: index.php</span>
+
+		<div id="buildFramework" > 
+			<span class="collapsable">-</span> Build framework 
+			<div class="hide level2">
+				<ol>
+					<li>Bootstrap</li>
+					<li>Build menus</li>
+					<li>Create request object</li>
+					<li>Run request</li>
+					<li>Validate request</li>
+					<li>Process request</li>
+				</ol>
+				etc.
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div id="step2" class="step">	
+
+	<span class="collapsable">-</span> eVe : Step 1 : Security Check
+	<div class="hide level1" > 	 
+		<br><span>Starts with: securityCheck.php</span>
+		<br><br>
+		<div  draggable="true" ondragstart="eVe.drag(event)" id="securityCheck2"  > 
+			<span class="collapsable">-</span> ID control 
+			<div class="hide level2">
+			<br>IP
+			<br>Cookies
+			<br>Session
+			<br>Local storage
+			</div>
+		</div>
+		<div  draggable="true" ondragstart="eVe.drag(event)" id="securityCheck3"  > 
+			<span class="collapsable">-</span> Bag control 
+			<div class="hide level2">
+			<br>Get request name
+			<br>Check permissions for this user and this request
+			<br>Check requirements for request
+			<br>Validate incoming data for this request
+			<br>Create passport
+			</div>
+		</div>
+		
+		<div  draggable="true" ondragstart="eVe.drag(event)" id="securityCheck4"  > 
+			<span class="collapsable">-</span> Main classes 
+			<div class="hide level2">
+			<br>eVe 
+			<br>securityCheck
+
+			</div>
+		</div>		
+		
+	</div>
+	
+</div>
+
+
+<div id="step3" class="step">	
+	<span class="collapsable">-</span> eVe : Step 2 : Process request 
+
+	<div class="hide level1" > 
+		<br><span>Starts with: serviceMain.php</span>
+		<div  draggable="true" ondragstart="eVe.drag(event)" id="service1"  > 
+			<span class="collapsable">-</span> 
+			<div class="hide level2">
+			<br>Check passport
+			<br>Process request according to passport
+			<br><br>
+			</div>
+		</div>
+		<div  draggable="true" ondragstart="eVe.drag(event)" id="service2"  > 
+			<span class="collapsable">-</span> 
+			<div class="hide level2">
+			<br>Response:
+			<br>Format response as array of html elements. 
+			<br>Each element will be a PHP array similar to this: 
+			<br>$thisBlock[1] = array('htmltag' => 'Input', 'name' => 'loginName', 'htmltype' => 'text'
+					, 'value' => '', 'classes' => '', 'attributes' => array('maxlength' => '16', 'size' => '8'));	
+
+			<br>Formatted response will be converted to Json string
+					<br>(so, in 3rd step, eVe_render.js can convert it to HTML elements.)
+			
+			</div>			
+		</div>			
+
+		
+		
+	</div>
+	
+</div>
+
+
+<div id="step4" class="step">	
+	<span class="collapsable">-</span> eVe : Step 3 : Theming and Front End 
+	<br>
+	<div class="hide level1" > 
+		<div  draggable="true" ondragstart="eVe.drag(event)" id="frontEnd1"  > 
+			<span class="collapsable">-</span> Starts with: send.php
+			<br>Includes HTML, CSS and Javascript files
+			<div class="hide level2">
+			<br>Main templates : httpHeader.php, htmlHead.php, htmlBody.php, htmlFooter.php
+			<br>Other templates : Templates for each task or for each html DOM object or will be in Javascript form. 
+			<br>Example: eVe_createForm.js
+			<br>Javascript main file: eVe_first.js, 
+			<br>Main theming file: eVe_render.js
+			<br>
+			<br>CSS: eVe_first.css
+			<br>
+			</div>
+		</div>			
+
+		
+		
+	</div>
+	
+</div>
+
+<div id="step5" class="step">	
+	<span class="collapsable">-</span> eVe : Utilities and conventions
+	<br>
+	<div class="hide level1" > 
+		<div  draggable="true" ondragstart="eVe.drag(event)" id="database"  > 
+			<span class="collapsable">-</span> 
+			<div class="hide level2">
+			<br>Database: 
+			<br>1- Security officer's tables:
+			<br>2- Webmaster's tables:
+			<br>3- Editors' tables: 
+			<br>4- Content tables
+			<br>5- View tables
+			<br>6- Other (application) tables
+			<br><br>Security officer's tables: A seperate, dedicated database for security officer would be better.
+				<br>This database might have tables: eVe_tableGroups, eVe_columnGroups, eVe_fileGroups, eVe_userGroups
+					,  suspiciousIPs, bannedIPs, suspiciousUsers, bannedUsers, etc.
+				<br>Permissions might be controlled by groups tables above (eVe_tableGroups, eVe_columnGroups, eVe_fileGroups, eVe_userGroups)
+			<br><br>Webmaster's tables: Webmaster must be able to create forms and pages through UI. 
+			<br>So, we need a group of tables to controll Webmaster's activities. 
+			<br>These UIs and relevant tasks might be developed in next version but now, database must be structured accordingly.
+			<br><br>Editors' tables: To track who created or edited which content, who uploaded a file.
+
+			</div>
+		</div>			
+		<div  draggable="true" ondragstart="eVe.drag(event)" id="users"  > 
+			<span class="collapsable">-</span> 
+			<div class="hide level2">
+
+			<br>Users, roles, permissions and groups:
+			<br>Main roles: Security officer, owner, webmaster, editor, reader
+			<br>Groups (hierarchy) will be defined by applications as needed. 
+				<br>
+		<pre>
+		Example:
+		groups ->
+				1- users ->		1- NewYork	->	1- Suffolk
+											2- Nassau
+											3- Brookly
+							2- California
+							3- Texas
+							4- Florida
+		
+				2- files
+				3- tables ->	1- Security officer
+							2- Webmasters
+							3- Editors	
+							
+				4- content	1- Sports	->	1- Football
+										2- Baseball
+										3- Soccer
+											
+						2- Travel	-> 1- NewYork	->	1- Suffolk
+												2- Nassau
+												3- Brooklyn
+									2- California
+									3- Texas
+									4- Florida
+									3- Texas
+									4- Florida
+				5- views
+		</pre>				
+			</div>
+		</div>	
+		<div  draggable="true" ondragstart="eVe.drag(event)" id="others"  > 
+			<span class="collapsable">-</span> 
+			<div class="hide level2">
+			<br<br>Forms: Content types and groups.
+				<br>Each form must structured in eVe_step2 as arrays of HTML2D elements.
+				<br>We need template scripts (Javascript) to render those arrays into HTML elements.
+				<br>Example: function eVe.render_form() in eve_render.js 
+				<br>Registration form, login form, contact form	can use function eVe.render_form() or 
+				<br>can create their own template function and call it in eve_render.js.
+				
+			<br><br>Tests: Automating testing
+				<br>We need test code for each form and view when the form or view is created.
+				<br>Add each test code to test.php. Run test.php to test all existing test codes after each code added.
+				<br>Basic idea: reset $_POST and $_GET, set $eVe_test = 'yes';
+					<br> ... if $eVe_test == 'yes' => don't send HTTP to client but proceed with test.php
+					
+			<br><br>Logs: Errors log will be logged in 'toDeveloper.txt' as encypted
+				<br>Webmaster and system admin will be notified by email after each error. File name will be given to webmaster.
+				<br>Encypted log file will be sent to developers pool or ticket system.
+				<br>Developer can decrypt the log file	and read it.
+
+			<br><br>Encryption
+				<br>We need a few types of encryption:
+					<br>1- One way encryption for enryption for passwords
+					<br>2- Two ways encryption for PII (personally identifiable information)
+					<br>2- Two ways encryption for file encryption  (Like in 'logs' mentioned above )
+			
+			<br><br><br><br>Views
+			<br>Menus			
+			<br>Multi languages
+			<br>Multi charsets
+			<br>Files			
+			</div>
+		</div>			
+		
+		
+	</div>
+	
+</div>
+
+<br>
+
+	<script>		
+		window.onload = function() {
+			eVe.steps = document.getElementsByClassName('step');
+			eVe.setCollapsables();
+			eVe.clickables();
+		}
+	</script>
+	
+</body>
+</html>
