@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <system.webServer>
+        <rewrite>
+            <rules>
+                <rule name="Redirect to eVe" patternSyntax="Wildcard">
+                    <match url="*" />
+                    <conditions>
+                        <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+                        <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+                    </conditions>
+                    <action type="Rewrite" url="security.php" />
+                </rule>
+            </rules>
+        </rewrite>
+        <defaultDocument>
+            <files>
+                <remove value="Default.asp" />
+                <remove value="index.htm" />
+                <remove value="index.html" />
+                <remove value="iisstart.htm" />
+                <remove value="Default.htm" />
+                <add value="security.php" />
+            </files>
+        </defaultDocument>
+    </system.webServer>
+</configuration>
