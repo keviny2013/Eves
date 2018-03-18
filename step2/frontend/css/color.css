@@ -1,0 +1,35 @@
+body{
+	background-color:beige;
+}
+.region {
+	border:3px solid yellow;
+}
+.block {
+	border:3px solid blue;
+}
+
+#r_1 {
+	background-color:aqua;
+}
+#r_2 {
+	background-color:#7B7DEF;
+}
+#r_3 {
+	background-color:white;
+}
+#r_4 {
+	background-color:gray;
+}
+#r_5 {
+	background-color:aqua;
+}
+
+#b_1_0 {
+	background-color: white;
+}
+#b_2_0 {
+	background-color: gray;
+}
+input[type=submit] {
+    background: silver;  
+}
