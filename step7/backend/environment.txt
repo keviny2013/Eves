@@ -1,0 +1,6 @@
+environment:development
+database_type:mysql
+database_host:localhost
+database_name:steps
+username:crud
+password:9!cr_Ud
