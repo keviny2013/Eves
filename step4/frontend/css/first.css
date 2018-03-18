@@ -1,0 +1,85 @@
+/*
+	 position first
+	 width, height next
+	 colors go to colors.css
+*/
+ 
+body{
+}
+.region {
+}
+.block {
+	padding: 1em;
+}
+#r_0 {
+	margin: auto;
+	
+	width: 70%;
+}
+#r_1 {
+	position: fixed;	
+	top: 25%;
+	
+	width: 20%;
+}
+#r_2 {
+	position: relative;	
+	left: 25%;
+	
+	width: 70%;
+}
+#r_3, #r_4 {
+	position: relative;	
+	left: 25%;
+	
+	width: 70%;
+}
+#r_5 {
+	margin: auto;	
+	margin-top: 1%;
+	width: 70%;
+}
+#b_0_0 {
+	margin: auto;
+	
+	width: 50%;
+}
+#b_5_0 {
+	margin: auto;
+	
+	width: 50%;
+}
+
+------------------------------------------------------------------
+
+h3, h1 {
+	margin-left: 10%;
+}
+#r_0 h1 {
+	display: inline;
+}
+#b_1_0 h3 {
+	display: block;
+
+}
+#b_1_0 a {
+	display: block;
+
+}
+.footer {	
+	clear: both;
+	width: 70%;
+	text-align: center;
+	margin: auto;
+	padding: 1em;
+}
+input[type=submit] {
+	margin-left: 30%;
+    cursor:pointer;
+	 font-size: 1.5em;
+	 width: 6em;
+	 height: 2em;
+	 border:0 none;
+	 border-radius: 1em; 
+}
+
