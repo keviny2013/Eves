@@ -1,0 +1,411 @@
+<?php
+
+
+/**
+*
+*	This code will convert arrays to HTML code. Arrays must represent a DOM element.
+*	- These DOM elements may have childreN; Table, form, ul, ol, div, p
+*	- Methods will be called from (page_first)_renderHtmlBody.php file as. $method = 'render' . $htmltag . '_' . $element['formatType'];
+*	So, we will have renderForm, renderA, renderImg, etc methods and 
+*	We might have custom 'formatType's like renderImg_100, renderImg_400, renderImg_1000, etc.
+*
+*/
+class renderHtmlTags extends eVe
+{
+
+	protected $request = '';
+
+	public function __CONSTRUCT($params)
+	{
+		parent::__Construct($params);
+		
+	// var_dump('<pre>img:', $element); exit;
+	
+		
+	}
+	
+
+	/**
+	*	'Asis' is not a real HTML tag. We use it for texts, markups, etc.
+	*/
+	public function renderAsis($element) {
+		
+		$rendered = $this->getAttributes($element[0]);
+		
+		$rendered .= $element['asis'];
+		
+
+
+		return $rendered;
+		
+	}
+
+	/**
+	*	fieldset is used to group the fields
+	*/
+	public function renderFieldset($element) {
+
+		$rendered = '';
+		
+		
+		return $rendered;
+		
+	}	
+
+
+	
+	public function renderImg($element) {
+// var_dump('<pre>element: ' , $element);
+		
+		$rendered = '<img src="' . $element[0]['src'] . '" alt="' . $element[0]['alt'] . '" ';
+		
+		$rendered .= $this->getAttributes($element[0]);
+		
+		$rendered .= '>';
+		
+
+		return $rendered;
+	}
+	
+	public function renderH3($element) {
+		
+		$rendered = '<h3 ';
+		
+		$rendered .= $this->getAttributes($element[0]);
+				
+		$rendered .= '>' . $element['text'] . '</H3>';
+		
+		return $rendered;
+		
+	}
+	
+	public function renderP($element) {
+
+		$rendered = '<p ';
+		
+		$rendered .= $this->getAttributes($element[0]);
+		
+		$rendered .= '>';
+		
+		$rendered .= $element['text'];
+		
+		$rendered .= '</p>';
+
+
+		return $rendered;
+		
+	}
+	
+	public function renderA($element) {
+		$rendered = '<a href="' . $element[0]['href'] . '" ';
+		$rendered .= $this->getAttributes($element[0]);
+		$rendered .= '>' . $element[0]['text'] . '</a>';
+
+		return $rendered;
+	}
+	
+	
+	public function renderSpan($element) {
+
+		$rendered = '<span ';
+		
+		$rendered .= $this->getAttributes($element[0]);
+		
+		$rendered .= '>';
+		
+		$rendered .= $element['text'];
+		
+		$rendered .= '</span>';
+
+
+		return $rendered;
+		
+	}
+
+	
+	public function renderRadio($element) {
+// var_dump('<pre>element: ' , $element);
+
+		$rendered = '';
+		// yesno radios
+		if(strpos($element[0]['formatType'], 'yesno') === 0) {
+			$rendered .= 'Yes <input name="' . $element[0]['name'] . '" value="1" type="radio" ' . $element[0]['attributes'] . '  >';
+			if(strpos($element[0]['formatType'], 'vertical')) {
+				$rendered .= '<br>';
+			}
+			$rendered .= 'No <input name="' . $element[0]['name'] . '" value="2" type="radio" ' . $element[0]['attributes'] . '  >';			
+		}
+		// status radios
+		elseif(strpos($element[0]['formatType'], 'yesno') === 0) {
+			$rendered .= 'On <input name="' . $element[0]['name'] . '" value="1" type="radio" ' . $element[0]['attributes'] . '  >';
+			if(strpos($element[0]['formatType'], 'vertical')) {
+				$rendered .= '<br>';
+			}
+			$rendered .= 'Off <input name="' . $element[0]['name'] . '" value="2" type="radio" ' . $element[0]['attributes'] . '  >';			
+		}		
+		
+		return $rendered;
+	}
+
+
+	
+	public function renderInput($element) {
+// var_dump('<pre>element: ' , $element);
+
+		if($element[0]['htmltype'] == 'radio') {
+			return $this->renderRadio($element);
+		}
+		
+		$rendered = '<input name="' . $element[0]['name'] . '" value="'	. $element[0]['value'] . '" type="' . $element[0]['htmltype'] . '" ';
+		
+		if($element[0]) {
+
+		}
+		else {
+			$rendered .= $this->getAttributes($element[0]);
+		}
+		
+		$rendered .= '>';
+		
+
+		return $rendered;
+	}
+
+	
+	public function renderButton($element) {
+		
+// var_dump('<pre>element: ' , $element);
+
+		$rendered = '<button name="' . $element[0]['name'] . '" value="'	. $element[0]['name'] . '" type="' 
+		. $element[0]['htmltype'] . '" ' . $element[0]['attributes'] . ' >' . $element[0]['name'] . '</button>';
+
+	
+		return $rendered;
+	}
+
+	
+	/**
+	*	'li's maybe another HTML element with a HTMLtag 
+	*	otherwise will be printed as is: Plain text or 
+	*	markup must be controlled during security check using htmlspecialchars if necessary
+	*/
+	public function renderUL($element) {
+
+		
+		$rendered = ' <ul ';
+		$rendered .= $this->getAttributes($element[0]);
+		$rendered .= '>';
+
+		$rendered .= $this->renderKids($element['kids']);
+		
+		$rendered .= ' </ul> ';
+		
+		return $rendered;
+	}
+	
+		
+	/**
+	*	method: POST
+	*
+	*/
+	public function renderForm($element) {
+		
+		$rendered = ' <form name="' . $element[0]['name'] . '" action="' . $element[0]['action'] . '" method="POST" ';
+		
+		$rendered .= $this->getAttributes($element[0]);
+		$rendered .= '>';
+
+// echo 'rendered: ' . htmlspecialchars($rendered); exit;
+
+		$rendered .= $this->renderKids($element['kids']);
+		
+		$rendered .= ' </form> ';
+// echo 'rendered: ' . htmlspecialchars($rendered); exit;
+		
+		return $rendered;
+	}	
+
+
+	/**
+	*	@todDo : formFields come from database
+	*
+	*/
+	public function renderForm_db1($element) {
+
+		$rendered = '<p class="subtitle">' . $element['form']['title'] . '</p> <form 
+		name="' . $element['form']['name'] . '" 
+		action="form_process_' . $element['form']['name'] . '" ';
+		$rendered .= $element['form']['attributes'];
+		$rendered .= '  method="POST"  >';
+		
+// var_dump('<pre>fields--221: ', $element['fields']);   // exit;		
+// 
+if($element['form']['name'] != 'simpleLogin') {
+ //  var_dump('<pre>fields--221: ', $element['fields']);   // exit;
+}
+ 
+		$rendered .= $this->renderKidsInGrid($element['fields'], $element['titles']);
+	
+	
+		$rendered .= ' </form> ';
+
+		
+		return $rendered;	
+
+
+	}
+
+	
+	// -------------------------  no tag functions
+
+	
+	/**
+	*	Handles 4 parameters:  (array) attributes, (array) class, (string) style and (string) js
+	*/
+	protected function getAttributes($element) {
+		
+		$rendered = ' ';
+		
+		if(!empty($element['attributes'])) {
+			foreach($element['attributes'] as $key => $val) {
+				$rendered .= ' ' . $key . '="' . $val . '", ';
+			}
+			$rendered = trim($rendered, ', ');
+		}
+
+		
+		if(!empty($element['class'])) {
+			$rendered .= ' class="';
+// echo '<br>class: ' .  var_dump($element['class']);
+			
+			foreach($element['class'] as $key => $val) {
+				$rendered .= $val . ' ';
+			}
+			$rendered = trim($rendered, ' ');
+			$rendered .= '" ';
+		}
+		
+		if(!empty($element['style'])) {
+			$rendered .= ' ' . $element['style'];
+		}
+		
+		if(!empty($element['js'])) {
+			$rendered .= ' ' . $element['js'];
+		}
+		
+		return $rendered;
+		
+	}
+	
+	/**
+	*	New line after element: $el[0]['display'] == 'br'
+	*/
+	protected function renderKids($kids) {
+		$rendered =  '';
+	
+		foreach($kids as $key => $el) {
+			if(is_array($el)) {
+				if(!empty($el[0]['htmltag'])) {
+					$htmltag = $el[0]['htmltag'];
+					$method = 'render' . $htmltag;
+					$rendered .= $this->$method($el);
+					if(!empty($el[0]['display'])) {
+						if($el[0]['display'] == 'br') {
+							$rendered .= '<br>';
+						}
+					}
+				}
+				else {
+					$this->metadata['toDeveloper']['renderHtmlTags.php'] = 'Error in renderForm: $el: ' . '<pre>' . var_export($el, true) . '</pre>';
+				}
+			}
+			else {
+				$rendered .= $el;
+			}
+		}
+		
+		return $rendered;
+		
+	}
+
+	
+	/**
+	*	Displaying elements in grids
+	*/
+	protected function renderKidsInGrid($fields, $titles) {
+		$rendered =  '<table><tbody>';
+		$cells = array();
+		$ordered = array();
+		foreach($fields as $key => $el) {
+			$ordered[$el['vertical']][$el['horizontal']] = $el;
+		}
+// var_dump('<pre>ordered:', $ordered); exit;
+		
+		foreach($ordered as $h1 => $hr) {
+			$rendered .=  '<tr>';
+			foreach($hr as $v1 => $td) {
+				$rendered .=  '<td>';
+// var_dump('<pre>td:', $td); exit;				
+					$eve_formfields_id = $td['eve_formfields_id'];
+					$el[0] = $td;					
+					if(!empty( $titles[$eve_formfields_id])) {
+						$title = $titles[$eve_formfields_id];
+						if($title['position'] == 'before') {
+							$rendered .=  '<label for="' . $td['name'] . '" ' . $title['attributes'] . ' > ' . $title['title'] . '</title> ';
+							$rendered .= $this->getAtag($el);
+						}
+						else if($title['position'] == 'before above') {
+							$rendered .=  '<label for="' . $td['name'] . '" ' . $title['attributes'] . ' > ' . $title['title'] . '</title> <br>';
+							$rendered .= $this->getAtag($el);
+						}				
+						else if($title['position'] == 'after') {
+							$rendered .= $this->getAtag($el);
+							$rendered .=  '<label for="' . $td['name'] . '" ' . $title['attributes'] . ' > ' . $title['title'] . '</title> ';
+						}
+						else if($title['position'] == 'after below') {
+							$rendered .= $this->getAtag($el);
+							$rendered .=  '<br><label for="' . $td['name'] . '" ' . $title['attributes'] . ' > ' . $title['title'] . '</title> <br>';
+						}
+					}
+					else {
+						$rendered .= $this->getAtag($el);
+					}	
+				$rendered .=  '</td>';
+			}
+		$rendered .=  '</tr>';
+		
+		}
+		$rendered .=  '</tbody></table>';
+		
+// echo '<br>Ok: ' . htmlspecialchars($rendered); exit;
+	
+	
+		return $rendered;
+		
+	}
+
+	
+	/**
+	*	Displaying elements in grids
+	*/
+	protected function generateLabel($el) {
+		$rendered = '<label for="' . $el[0]['name'] . '" >' . $el[0]['name'] . '</title>';
+		
+	
+	}
+	
+	/**
+	*	Displaying elements in grids
+	*/
+	protected function getAtag($el) {
+		$htmltag = $el[0]['htmltag'];
+		$method = 'render' . $htmltag;
+		
+		return $this->$method($el);
+	
+	}	
+	
+
+	
+}
+	

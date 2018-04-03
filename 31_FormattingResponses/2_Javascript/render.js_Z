@@ -1,0 +1,312 @@
+/**
+	This page is dedicated to rendering sanitized and formatted data into HTML
+	Incoming data  
+		1- must be sanitized for safety
+		2- must be formatted to meet DOM structure
+		3- must be converted to json string
+
+	Passing PHP arrays or objects to Javascript: 
+		Dont use colon or semicolon so 
+			Javascript does not have to do JSON.parse()
+				PHP: this->datam['addJs'][] = " eVe.datam.regions = " . json_encode(regions) . "; ";
+
+				
+*/
+
+
+
+/** 
+*	This method renders eVe.datam.regions and replaces with body.innerHTML
+	To dump the data :
+		eVe.dumpStr = '';
+		eVe.dumpAssoc('regions', eVe.datam.regions);
+		console.log(eVe.dumpStr);	
+*	3 steps:  
+		1- renderHtmlBody -> 
+		2- eVe.renderRegion(aregion) -> 
+		3- renderEement (mostly one function for each HTML tag))
+*	functions are named like: render_htmltag_htmltype_renderbyOption
+*	renderby is customized option. Customized render and display. Examples:
+	render_input_radio_yesno , render_input_radio_dual (2 options)
+	render_form__ : means no htmltype no renderby
+	render_form__horizontal : means no htmltype. renderby = horizontal
+	render_form__sharedQuestions : renderby = sharedQuestions
+*/
+eVe.renderHtmlBody = function(){
+	
+	// console.log('number of regions: ' + eVe.datam.regions.length);
+		
+	var regions = eVe.datam.regions;
+	var h1, v1, row1, regionId;
+	// renderHtmlBody = '<h3>Testing rendering</h3>';
+	var renderHtmlBody = '';
+	for(h1 in regions)	{
+	if(regions.hasOwnProperty(h1))	{
+		var row1 = regions[h1];			
+		for(v1 in row1)	{
+		if(row1.hasOwnProperty(v1))	{			
+				var region = row1[h1];
+				regionId = 'r_' + h1 + '_' + v1;
+				// console.log('regionId: ' + regionId);
+		
+				renderHtmlBody += '<div id="' + regionId + '" class="region ';
+				if(v1 === 0) {
+					// adding class block
+					renderHtmlBody += ' block"';
+				}
+				else {
+					// adding class inline
+					renderHtmlBody += ' inline';
+				}
+				renderHtmlBody += '" >';
+				
+				renderHtmlBody += eVe.render_loop(region);
+				
+				renderHtmlBody += '<h3>TEST This is h3 </h3>';
+				renderHtmlBody += '</div>';					
+				// console.log('renderHtmlBody-48: ' + renderHtmlBody);
+		}
+		}
+	}
+	}
+	// console.log('renderHtmlBody-53: ' + renderHtmlBody);
+
+     document.getElementsByTagName('body')[0].innerHTML = renderHtmlBody;
+	 
+	return true;
+}
+
+
+/**
+*	loops through an element (parent)
+*/
+eVe.render_loop = function (parent) {
+	if(typeof(parent) !== 'object') {
+		return;
+	}
+		eVe.dumpStr = '';
+		eVe.dumpAssoc('parent', parent);
+		console.log(eVe.dumpStr);
+		
+	var h2, v2, row2, element, method;
+	var rendered = '';
+	for(h2 in parent)	{
+	if(parent.hasOwnProperty(h2))	{
+		row2 = parent[h2];			
+		for(v2 in row2)	{
+		if(row2.hasOwnProperty(v2))	{			
+			element = row2[v2];
+			// console.log('element-53: ' + v2 + ' : ' + element);
+			if(typeof(element['object_type']) != 'undefined') {
+				method = 'render_' + element['object_type'] + '_' + element['object_renderBy'];
+				rendered += eVe.renderByTag(element);
+			}			
+			else if(typeof(element['field_htmltag']) != 'undefined') {
+				rendered += eVe.renderByTag(element);
+			}
+			else if(typeof(element['kids']) != 'undefined') {
+				rendered += eVe.renderKidsInGrid(element);
+			}
+			else {
+				eVe.render_loop(element);
+			}
+		}
+		}
+	}	
+	}
+	return rendered;
+	
+}			
+
+/**
+*	extracting method and calling a method
+*/
+eVe.renderByTag = function (element) {
+	var renderElement = '';
+	method = 'render_' + element['field_htmltag'] + '_' + element['field_htmltype'] + '_' + element['field_renderby'];
+	// console.log('method: ' + method);						
+	if( eVe.method_exists(eVe, method)) {
+		renderElement += eVe[method](element);
+	}
+	else {
+		renderElement += eVe.render_others(element);
+	}
+	
+	return renderElement;
+
+}	
+
+
+
+/**
+*	Displaying elements in grids. Needs titles as seperate array.
+*/
+eVe.renderKidsInGrid = function (fields, titles) {
+	var h2, v2, row2, element, method;
+	var renderElement = '';
+	for(h2 in parent)	{
+	if(parent.hasOwnProperty(h2))	{
+		var row2 = parent[h2];			
+		for(v2 in row2)	{
+		if(row2.hasOwnProperty(v2))	{			
+			element = row2[v2];	
+
+			var rendered =  '';
+			var h1, row, v1, el, id_fields, title;
+			for(h1 in fields)	{		
+				if(fields.hasOwnProperty(h1))	{
+					row = fields[h1];
+					rendered +=  '<div class="row">';
+					for(v1 in row) {
+						el = row[v1];
+						rendered +=  '<div class="cell">';
+							id_fields = el['id_fields'];
+
+							if(typeof(titles['id_fields']) != 'undefined') {
+								title = titles['id_fields'];
+								rendered +=  '<label for="' + el['field_name'] + '" ' + title['title_attributes'] + ' > ' + title['title_title'] + '</label>';
+							}
+							else {
+								rendered += '<label></label>';
+							}
+							rendered += eVe.renderByTag(el);
+						rendered += '</div>';	// end of cell div
+								
+								/*
+								if(title['position'] == 'before') {
+									rendered +=  '<label for="' + el['name'] + '" ' + title['attributes'] + ' > ' + title['title'] + '</label> ';
+									rendered += eVe.renderByTag(el);
+								}
+								else if(title['position'] == 'before above') {
+									rendered +=  '<label for="' + el['name'] + '" ' + title['attributes'] + ' > ' + title['title'] + '</title> <br>';
+									rendered += eVe.renderByTag(el);
+								}				
+								else if(title['position'] == 'after') {
+									rendered += eVe.renderByTag(el);
+									rendered +=  '<label for="' + el['name'] + '" ' + title['attributes'] + ' > ' + title['title'] + '</title> ';
+								}
+								else if(title['position'] == 'after below') {
+									rendered += eVe.renderByTag(el);
+									rendered +=  '<br><label for="' + el['name'] + '" ' + title['attributes'] + ' > ' + title['title'] + '</title> <br>';
+								}
+								*/
+
+					}
+					rendered +=  '</div>';	// end of row div
+				}
+			
+			}
+		}
+		}
+
+	}
+	}
+	return rendered;
+	
+}
+
+
+/**
+*	Checks if a function exists
+*
+*/
+eVe.method_exists = function(obj, method) {
+  // http://kevin.vanzonneveld.net
+  // +   original by: Brett Zamir (http://brett-zamir.me)
+  // *     example 1: function class_a() {this.meth1 = function () {return true;}};
+  // *     example 1: var instance_a = new class_a();
+  // *     example 1: method_exists(instance_a, 'meth1');
+  // *     returns 1: true
+  // *     example 2: function class_a() {this.meth1 = function () {return true;}};
+  // *     example 2: var instance_a = new class_a();
+  // *     example 2: method_exists(instance_a, 'meth2');
+  // *     returns 2: false
+  if (typeof obj === 'string') {
+    return this.window[obj] && typeof this.window[obj][method] === 'function';
+  }
+
+  return typeof obj[method] === 'function';
+}
+
+
+// ----------  methods for each TAGs and customized options (renderBy) -------------------------------------
+
+			
+/**
+*	'toDo : add fılter for malicious text / code
+*/
+eVe.render_asis__ = function (element) {
+
+		var rendered = element['field_innerhtml'];
+
+		// console.log('render_asis__: ' + rendered);
+
+		return rendered;
+}
+
+
+
+/**
+*
+*/
+eVe.render_img__ = function (element) {
+
+		var rendered = '<img ' + element['field_attributes'];
+
+		if(typeof(element['field_classes']) != 'undefined') {
+			rendered += ' class="' + element['field_classes'] + '"';			
+		}
+		rendered += '>';
+		
+		// console.log('render_img__: ' + rendered);
+
+		return rendered;
+}
+
+
+/**
+*
+*/	
+eVe.render_others = function (element) {
+
+		var rendered = '<' + element['field_htmltag'] + element['field_attributes'];
+
+		if(typeof(element['field_classes']) != 'undefined') {
+			rendered += ' class="' + element['field_classes'] + '"';			
+		}
+		rendered += '>' + element['field_innerhtml'] + '</' + element['field_htmltag'] + '>';
+
+		// console.log('render_others: ' + rendered);
+
+		return rendered;
+}
+
+
+// ---- forms
+
+
+/**
+*	formFields and titles are coming in certain structure
+*
+*/
+eVe.render_form__db1 = function (element) {
+		eVe.dumpStr = '';
+		eVe.dumpAssoc('element', element);
+		console.log(eVe.dumpStr);	
+		
+	var rendered = '<p class="subtitle">' + element['form']['object_title'] + '</p> <form name="' + element['form']['object_name'] + '" action="object_process_' + element['form']['object_name'] + '" ';
+	rendered += element['form']['object_attributes'];
+	rendered += '  method="POST"  >';
+	
+	rendered += eVe.renderKidsInGrid(element['fields'], element['titles']);
+
+	rendered += ' </form> ';
+	
+	return rendered;	
+
+}
+
+
+
+
+// ---- forms --- end

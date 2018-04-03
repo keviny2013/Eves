@@ -1,0 +1,89 @@
+<?php
+
+/*
+*	Loop through regions > blocks > elements	
+*	$rendered = new render($thisElement);
+	$renderedProperties = $rendered->getProperties();
+	$page_first_renderHtmlBody .= $renderedProperties['datam']['html'];
+*
+*
+*/
+
+$page_first_renderHtmlBody = '<body ' . $datam['bodyAttributes'] . '>';
+
+require_once(DOCROOT . '/31_FormattingResponses/17_Tools/renderHtmlTags.php');
+$renderParams = array('objectName' => 'renderHtmlTags');
+$renderParams['parentObjectName'] = $this->metam['objectName'];
+$renderHtmlTags = new renderHtmlTags($renderParams);
+
+$regions = &$datam['regions'];
+$countH1 = count($regions);
+
+
+@ toDo : poisition start at: x - y - z : maybe linear or angle
+@ toDo : distance: 			 width - height - length 
+
+for($h1 = 0; $h1 < $countH1; $h1++) {
+	$row = $regions[$h1];
+	$countV1 = count($row);
+	for($v1 = 0; $v1 < $countV1; $v1++) {
+		$region = $regions[$h1][$v1];
+		$domId = 'r_' . $h1 . '_' . $v1;
+		$page_first_renderHtmlBody .= '<div id="' . $domId . '" class="region ';
+		if($v1 === 0) {
+			$page_first_renderHtmlBody .= ' floatClear" > ';
+		}
+		else {
+			$page_first_renderHtmlBody .= '" > ';
+		}
+		
+		$countH2 = count($region);
+		
+		for($h2 = 0; $h2 < $countH2; $h2++) {
+// $this->metam['toDeveloper']['countH2'] = 'domId: ' . $domId . ' : countH2: ' . $countH2 . ' : h2: ' . $h2;			
+			$row = $region[$h2];
+			$countV2 = count($row);
+			unset($row);
+			for($v2 = 0; $v2 < $countV2; $v2++) {
+				$block = $regions[$h1][$v1][$h2][$v2];
+				// if(!$block) {  continue;  }	
+			
+				$domId = 'b_' . $h1 . '_' . $v1 . '_' . $h2 . '_' . $v2;
+				$page_first_renderHtmlBody .= '<div id="' . $domId . '" class="block" > ';
+				
+				foreach($block as $key => $val) {
+					$element = $val;
+					
+// var_dump('<pre>element:', $element);  // exit;
+
+					// If $key = 0 it is an array('htmltag' => '', etc
+
+					if(!empty($element[0]['htmltag'])) {
+						$htmltag = $element[0]['htmltag'];
+						if(!empty($element['formatType'])) {
+							$method = 'render' . $htmltag . '_' . $element['formatType'];
+							$page_first_renderHtmlBody .= $renderHtmlTags->$method($element);
+						}
+						else {
+							$method = 'render' . $htmltag;
+							$page_first_renderHtmlBody .= $renderHtmlTags->$method($element);
+						}
+					}
+					else {
+						$this->metam['toDeveloper']['page_first_renderHtmlBody.php-45'] = 'htmltag and asis is missing: domId: ' . $domId;
+						//<pre>' . var_export($datam, true) . '</pre><br>';
+// var_dump('<pre>datam:', $datam);  exit;	
+					}
+				}
+				$page_first_renderHtmlBody .= '</div>'; 
+			}			
+		}
+		unset($region);
+		$page_first_renderHtmlBody .= '</div>'; 		
+	}
+	
+} 
+
+
+
+
