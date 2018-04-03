@@ -1,0 +1,71 @@
+/*
+	 position first
+	 width, height next
+	 colors go to colors.css
+*/
+ 
+body{
+}
+.region {
+}
+.block {
+	
+}
+#r_0, #r_5 {
+	margin: auto;
+	margin-top: 1%;	
+	width: 70%;
+	height: 10%;
+	
+	padding: 1em;
+}
+
+#r_1 {
+	position: fixed;	
+	top: 25%;
+	
+	width: 23%;
+	
+	padding: 1em;	
+
+}
+#r_2, #r_3, #r_4 {
+	position: relative;	
+	left: 25%;
+	
+	width: 74%;
+	
+}
+#r_2 {
+	height: 30em;	
+}
+#r_3 {
+	height: 15em;	
+}
+#r_4 {
+	height: 10em;	
+}
+
+#b_0_0, #b_5_0 {
+	margin: auto;
+	
+	width: 50%;
+	
+}
+#b_0_0 h1 {
+	display: inline;
+	padding-left: 1em;
+}
+#b_1_0 h3, #b_1_0 a {
+	display: block;
+	padding: 0.5em;
+}
+#b_2_0, #b_3_0, #b_4_0 {
+	margin: auto;
+	
+	height: 85%;
+	margin: 1em;
+	
+}
+
+

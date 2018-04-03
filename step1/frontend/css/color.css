@@ -1,0 +1,29 @@
+body{
+	background-color:beige;
+}
+.region {
+	border:3px solid yellow;
+}
+.block {
+	border:3px solid blue;
+}
+
+#r_0 {
+	background-color:aqua;	
+}
+#r_1 {
+	background-color:#5B7DEF;	
+}
+#r_2 {
+	background-color:white;	
+}
+#r_3 {
+	background-color:#DBDDEF;
+}
+#r_4 {
+	background-color:aqua;
+}
+
+#b_0_0 {
+	background-color: white;
+}
